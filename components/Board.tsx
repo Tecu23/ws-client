@@ -2,13 +2,13 @@ import { useRef } from "react";
 
 import PropTypes from "prop-types";
 
-import type { Square, PieceSymbol, Color, Piece } from "chess.js";
+import type { Square, PieceSymbol, Color } from "chess.js";
 import { Chess } from "chess.js";
 
 import Tile from "./Tile";
 
-import { pc2Text } from "../utils/config/globalConfig.js";
-import { Ranks, Files } from "../utils/constants/board.js";
+import { pc2Text } from "../utils/config/globalConfig";
+import { Ranks, Files } from "../utils/constants/board";
 
 function Board() {
     const boardRef = useRef<HTMLDivElement>(null);
@@ -52,13 +52,9 @@ function Board() {
                 } | null = b[r][f];
 
                 if (sq == null) {
-                    console.log(
-                        Ranks[7 - r] + Files[f],
-                        Files[f].toLowerCase(),
-                    );
                     board.push(
                         <Tile
-                            key={Ranks[7 - r] + Files[f].toLowerCase()}
+                            key={Files[f].toLowerCase() + Ranks[7 - r]}
                             number={f + r}
                         />,
                     );
