@@ -1,3 +1,5 @@
+import { Chess } from "chess.js";
+
 export const pc2Text = {
     p: "pawn",
     n: "knight",
@@ -6,3 +8,5 @@ export const pc2Text = {
     b: "bishop",
     r: "rook",
 };
+
+export const chess = new Chess();
