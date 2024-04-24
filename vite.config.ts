@@ -10,6 +10,7 @@ export default defineConfig({
             src: "/src",
             config: "/utils/config",
             hooks: "/utils/hooks",
+            context: "/utils/context",
         },
     },
 });

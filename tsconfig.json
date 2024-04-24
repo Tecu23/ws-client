@@ -22,7 +22,8 @@
     },
     "include": [
         "src",
-        "components"
+        "components",
+        "utils"
     ],
     "references": [
         {

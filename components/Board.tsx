@@ -2,7 +2,8 @@ import { useRef, useState } from "react";
 
 import PropTypes from "prop-types";
 
-import type { Square, PieceSymbol, Color, Piece } from "chess.js";
+import type { Square, PieceSymbol, Color } from "chess.js";
+import Piece from "./Piece";
 
 import { DndContext } from "@dnd-kit/core";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
@@ -18,14 +19,11 @@ function Board() {
         createBoard(chess.board()),
     );
 
-    const [activePiece, setActivePiece] = useState<Piece | null>(null);
+    // const [activePiece, setActivePiece] = useState<{
+    //     color: string;
+    //     type: string;
+    // } | null>(null);
     const [fromSq, setFromSq] = useState<string | null>(null);
-
-    // useEffect(() => {
-    //     const b = chess.board();
-    //     setBoardState(createBoard(b));
-    // }, []);
-    //
 
     function createBoard(
         b: Array<
@@ -57,12 +55,20 @@ function Board() {
                 } else {
                     board.push(
                         <Tile
-                            image={`pieces/${pc2Text[sq.type]}_${sq.color}.png`}
                             sq={Files[f].toLowerCase() + Ranks[7 - r]}
-                            piece={{ color: sq.color, type: sq.type }}
                             className={"chess-piece"}
                             key={sq.square}
                             number={f + r}
+                            piece={
+                                <Piece
+                                    color={sq.color}
+                                    type={sq.type}
+                                    sq={Files[f].toLowerCase() + Ranks[7 - r]}
+                                    image={`pieces/${pc2Text[sq.type]}_${
+                                        sq.color
+                                    }.png`}
+                                />
+                            }
                         />,
                     );
                 }
@@ -72,14 +78,11 @@ function Board() {
     }
 
     function onDragStart(e: DragStartEvent) {
-        setActivePiece({
-            type: e.active.data.current?.type,
-            color: e.active.data.current?.color,
-        });
         setFromSq(e.active.data.current?.sq);
     }
 
     function onDragEnd(e: DragEndEvent) {
+        if (!e.over) return;
         const end = e.over?.data.current?.sq;
         chess.move(`${fromSq}${end}`);
         const b = chess.board();
