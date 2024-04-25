@@ -1,4 +1,4 @@
-import Board from "../components/Board";
+import Game from "../components/Game";
 
 function App() {
     return (
@@ -6,7 +6,7 @@ function App() {
             <div className="bg-red-100 h-40">Hello World</div>
 
             <div className="h-[400px] w-[400px] self-center">
-                <Board name="board" />
+                <Game />
             </div>
         </main>
     );

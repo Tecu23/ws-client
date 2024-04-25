@@ -1,4 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
+import { useChess } from "../utils/context/ChessContext";
 
 type Props = {
     sq: string;
@@ -8,6 +9,8 @@ type Props = {
 };
 
 const Piece = ({ type, color, sq, image }: Props) => {
+    const { chess } = useChess();
+
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: `draggable-${sq}`,
         data: {
@@ -18,7 +21,7 @@ const Piece = ({ type, color, sq, image }: Props) => {
     });
 
     const enableDrag = {
-        // pointerEvents: false ? "none" : "auto",
+        pointerEvents: chess.turn() === color ? "auto" : "none",
         userSelect: "none",
     };
 
@@ -36,7 +39,6 @@ const Piece = ({ type, color, sq, image }: Props) => {
               cursor: "grab",
               width: "100%",
               height: "100%",
-
               zIndex: 5,
               ...enableDrag,
           };

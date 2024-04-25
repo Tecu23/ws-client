@@ -15,13 +15,7 @@ function Tile({ number, className, sq, piece }: Props) {
     });
 
     return (
-        <button
-            type="button"
-            ref={setNodeRef}
-            className={`${
-                (number & 1) === 0 ? "bg-[#779556]" : "bg-[#ebecd0]"
-            } ${className}  cursor-grabbing`}
-        >
+        <button type="button" ref={setNodeRef} className={`${(number & 1) === 0 ? "bg-[#779556]" : "bg-[#ebecd0]"} ${className} cursor-grabbing`}>
             {piece}
         </button>
     );
