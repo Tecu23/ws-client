@@ -85,6 +85,7 @@ function Board() {
             }
             setBoardState(createBoard(chess.board(), []));
         } catch (e) {
+            console.log(e);
         } finally {
             setBoardState(createBoard(chess.board(), []));
         }
