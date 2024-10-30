@@ -9,7 +9,9 @@ export interface PieceType {
 
 export interface ChessContextValue {
     chess: Chess;
-    possibleMoves: Array<Move>;
+    possibleMoves: Move[];
+    moveHistory: Move[];
+    addToHistory: (move: Move) => void;
     setPossibleMoves: Dispatch<React.SetStateAction<Array<Move>>>;
     isAtTheTop: (arg: Square) => boolean;
     isAtTheBottom: (arg: Square) => boolean;

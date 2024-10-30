@@ -23,16 +23,24 @@ type Props = {
 
 const ChessProvider = ({ children }: Props) => {
     const [chess] = useState(new Chess());
-    const [possibleMoves, setPossibleMoves] = useState<Array<Move>>([]);
+
+    const [moveHistory, setMoveHistory] = useState<Move[]>([]);
+    const [possibleMoves, setPossibleMoves] = useState<Move[]>([]);
 
     const isAtTheTop = (sq: Square) => sq.includes("8");
     const isAtTheBottom = (sq: Square) => sq.includes("1");
+
+    const addToHistory = (move: Move) => {
+        setMoveHistory([...moveHistory, move]);
+    };
 
     return (
         <ChessContext.Provider
             value={{
                 chess,
                 possibleMoves,
+                moveHistory,
+                addToHistory,
                 setPossibleMoves,
                 isAtTheTop,
                 isAtTheBottom,
