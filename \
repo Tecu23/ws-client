@@ -24,6 +24,8 @@ function Board() {
         position: { x: 0, y: 0 },
         square: null,
     });
+    const [selectedPromotionPiece, setSelectedPromotionPiece] = useState<PieceSymbol | null>(null);
+
     const boardRef = useRef<HTMLDivElement>(null);
 
     const createBoard = useCallback(
@@ -97,8 +99,10 @@ function Board() {
             // Get the board position to display the popup near the promotion square
             const rect = boardRef.current?.getBoundingClientRect();
             if (rect) {
-                const x = (endSquare.charCodeAt(0) - "a".charCodeAt(0) - 1) * (rect.width / 8) + rect.left + 10;
-                const y = chess.turn() === "w" ? 2 : rect.height;
+                const x = (endSquare.charCodeAt(0) - "a".charCodeAt(0) - 1) * (rect.width / 8) + rect.left + 8;
+                const y = chess.turn() === "w" ? 2 : rect.height - 50;
+
+                console.log(endSquare.charCodeAt(0) - "a".charCodeAt(0), x, y, rect.width, rect.height, rect.left);
 
                 setPromotionPopup({ visible: true, position: { x, y }, square: endSquare });
             }
@@ -142,12 +146,7 @@ function Board() {
                         console.log(`pieces/${piece}_${"w"}.svg`);
 
                         return (
-                            <button
-                                type="button"
-                                key={piece}
-                                onClick={() => handlePromotionChoice(piece as PieceSymbol)}
-                                className="bg-white flex justify-center items-center w-[45px] h-[45px]"
-                            >
+                            <button key={piece} onClick={() => handlePromotionChoice(piece as PieceSymbol)} className="bg-white flex justify-center items-center w-[45px] h-[45px]">
                                 <div
                                     style={{
                                         width: "80%",

@@ -1,5 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 import { useChess } from "../utils/context/ChessContext";
+import type { CSSProperties } from "react";
 
 type Props = {
     sq: string;
@@ -20,13 +21,13 @@ const Piece = ({ type, color, sq, image }: Props) => {
         },
     });
 
-    const enableDrag = {
+    const enableDrag: CSSProperties = {
         pointerEvents: chess.turn() === color ? "auto" : "none",
         userSelect: "none",
     };
 
     // conditional styling
-    const style = transform
+    const style: CSSProperties = transform
         ? {
               transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(1.25)`,
               zIndex: 10,
@@ -44,13 +45,13 @@ const Piece = ({ type, color, sq, image }: Props) => {
           };
 
     return (
-        <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+        <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="w-full h-full flex justify-center items-center bg-transparent">
             {image && (
                 <div
                     style={{
-                        width: "100%",
+                        width: "80%",
                         maxWidth: 45,
-                        height: "100%",
+                        height: "80%",
                         maxHeight: 45,
 
                         backgroundImage: `url(${image})`,

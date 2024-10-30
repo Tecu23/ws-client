@@ -1,12 +1,12 @@
 import { useDroppable } from "@dnd-kit/core";
 
 type Props = {
-    number: number;
     className?: string;
     sq: string;
     piece?: JSX.Element;
+    isPossibleMove?: boolean;
 };
-function Tile({ number, className, sq, piece }: Props) {
+function Tile({ className, sq, piece, isPossibleMove }: Props) {
     const { setNodeRef } = useDroppable({
         id: `droppable-${sq}`,
         data: {
@@ -15,7 +15,8 @@ function Tile({ number, className, sq, piece }: Props) {
     });
 
     return (
-        <button type="button" ref={setNodeRef} className={`${(number & 1) === 0 ? "bg-[#779556]" : "bg-[#ebecd0]"} ${className} cursor-grabbing`}>
+        <button type="button" ref={setNodeRef} className={` ${className} cursor-grabbing flex justify-center items-center`}>
+            {isPossibleMove && <div className="absolute w-4 h-4 rounded-full bg-active-light" />}
             {piece}
         </button>
     );
