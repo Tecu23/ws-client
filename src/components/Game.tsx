@@ -9,7 +9,7 @@ import Board from "./Board";
 
 function Game() {
     return (
-        <div className="container max-w-4xl w-full ">
+        <div className="container mx-auto max-w-7xl w-full h-full lg:flex lg:flex-row-reverse lg:items-center lg:gap-24">
             <ChessProvider>
                 <MoveHistory />
                 <div className="w-full h-full flex items-center justify-center">

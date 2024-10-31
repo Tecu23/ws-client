@@ -12,6 +12,7 @@ import Profile from "./Profile";
 import { pc2Text } from "../utils/config/globalConfig";
 import { Ranks, Files } from "../utils/constants/board";
 import { useChess } from "../utils/context/ChessContext";
+import { useWindowSize } from "../utils/hooks/useWindowSize";
 
 function Board() {
     const { chess, isAtTheTop, isAtTheBottom, addToHistory } = useChess();
@@ -20,7 +21,12 @@ function Board() {
     const [lastMoveFromSq, setLastMoveFromSq] = useState<string | undefined>(undefined);
     const [lastMoveToSq, setLastMoveToSq] = useState<string | undefined>(undefined);
 
-    const [promotionPopup, setPromotionPopup] = useState<{ visible: boolean; position: { x: number; y: number }; square: string | null; color: "w" | "b" }>({
+    const [promotionPopup, setPromotionPopup] = useState<{
+        visible: boolean;
+        position: { x: number; y: number };
+        square: string | null;
+        color: "w" | "b";
+    }>({
         visible: false,
         position: { x: 0, y: 0 },
         square: null,
@@ -31,6 +37,8 @@ function Board() {
     const [capturedBlackPieces, setCapturedBlackPieces] = useState<PieceSymbol[]>([]);
 
     const boardRef = useRef<HTMLDivElement>(null);
+
+    const [width, _] = useWindowSize();
 
     const createBoard = useCallback(
         (
@@ -100,10 +108,15 @@ function Board() {
             // Get the board position to display the popup near the promotion square
             const rect = boardRef.current?.getBoundingClientRect();
             if (rect) {
-                const x = (endSquare.charCodeAt(0) - "a".charCodeAt(0) - 1) * (rect.width / 8) + rect.left + 10;
+                const x = (endSquare.charCodeAt(0) - "a".charCodeAt(0)) * (rect.width / 8) + (width < 1024 ? 20 : 36);
                 const y = chess.turn() === "w" ? 2 : rect.height;
 
-                setPromotionPopup({ visible: true, position: { x, y }, square: endSquare, color: chess.turn() });
+                setPromotionPopup({
+                    visible: true,
+                    position: { x, y },
+                    square: endSquare,
+                    color: chess.turn(),
+                });
             }
             return;
         }
@@ -131,7 +144,11 @@ function Board() {
 
     function handlePromotionChoice(piece: PieceSymbol) {
         if (promotionPopup.square && fromSq) {
-            const move = chess.move({ from: fromSq, to: promotionPopup.square, promotion: piece.at(0) });
+            const move = chess.move({
+                from: fromSq,
+                to: promotionPopup.square,
+                promotion: piece.at(0),
+            });
             addToHistory(move);
             if (move?.captured) {
                 if (move.color === "w") {
@@ -144,42 +161,48 @@ function Board() {
             setLastMoveFromSq(fromSq);
             setLastMoveToSq(promotionPopup.square);
             setBoardState(createBoard(chess.board(), [], fromSq, promotionPopup.square));
-            setPromotionPopup({ visible: false, position: { x: 0, y: 0 }, square: null, color: "w" });
+            setPromotionPopup({
+                visible: false,
+                position: { x: 0, y: 0 },
+                square: null,
+                color: "w",
+            });
         }
     }
 
     return (
-        <div className="relative w-[406px] h-[406px]">
+        <div className="relative w-[406px] lg:w-[648px] lg:h-[648px] h-[406px] ">
             <Profile capturedPieces={capturedBlackPieces} color="b" name="ArGoX" elo="9999" />
             <div className="bg-white w-full h-full flex justify-center items-center border rounded-lg pt-2 pr-2 pb-6 lg:pb-10 pl-6 lg:pl-10 relative">
                 <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-                    <div ref={boardRef} className="w-[360px] lg:w-[360px] h-[360px] lg:h-[600px] grid grid-cols-8 grid-rows-8">
+                    <div ref={boardRef} className="w-[360px] lg:w-[600px] h-[360px] lg:h-[600px] grid grid-cols-8 grid-rows-8">
                         {boardState}
                     </div>
                 </DndContext>
                 {promotionPopup.visible && (
                     <div
-                        style={{ position: "absolute", left: promotionPopup.position.x, top: promotionPopup.position.y, zIndex: 20 }}
-                        className="rounded h-[188px] w-[51px] shadow-md flex flex-col justify-center items-center p-1 bg-white"
+                        style={{
+                            position: "absolute",
+                            left: promotionPopup.position.x,
+                            top: promotionPopup.position.y,
+                            zIndex: 20,
+                        }}
+                        className="rounded h-[188px] lg:h-[308px] w-[51px] lg:w-[83px] shadow-md flex flex-col justify-center items-center p-1 bg-white"
                     >
                         {["queen", "rook", "bishop", "knight"].map((piece) => {
-                            console.log(`pieces/${piece}_${promotionPopup.color}.svg`);
-
                             return (
                                 <button
                                     type="button"
                                     key={piece}
                                     onClick={() => handlePromotionChoice(piece as PieceSymbol)}
-                                    className="bg-white flex justify-center items-center w-[45px] h-[45px]"
+                                    className="bg-white flex justify-center items-center w-[45px] lg:w-[75px] h-[45px] lg:h-[75px]"
                                 >
                                     <div
                                         style={{
                                             width: "80%",
-                                            maxWidth: 45,
                                             height: "80%",
-                                            maxHeight: 45,
 
-                                            backgroundImage: `url(${`pieces/${piece}_${"w"}.svg`})`,
+                                            backgroundImage: `url(${`pieces/${piece}_${promotionPopup.color}.svg`})`,
                                             backgroundSize: "cover",
                                             backgroundRepeat: "no-repeat",
                                         }}
@@ -192,14 +215,14 @@ function Board() {
                 {/* Ranks and Files Markers */}
                 <div className="absolute w-6 lg:w-10 h-full bg-transparent top-0 left-0 flex flex-col justify-start items-center pt-2">
                     {[8, 7, 6, 5, 4, 3, 2, 1].map((num) => (
-                        <p key={num} className="text-sm font-medium w-2 h-[45px] flex justify-center items-center">
+                        <p key={num} className="text-sm lg:text-xl font-medium w-2 h-[45px] lg:h-[75px] flex justify-center items-center">
                             {num}
                         </p>
                     ))}
                 </div>
                 <div className="absolute w-full h-6 lg:h-10 bg-transparent bottom-0 left-0 flex flex-row justify-end items-center pr-2">
                     {["a", "b", "c", "d", "e", "f", "g", "h"].map((num) => (
-                        <p key={num} className="text-sm font-medium uppercase w-[45px] h-2 flex justify-center items-center">
+                        <p key={num} className="text-sm lg:text-xl font-medium uppercase w-[45px] lg:w-[75px] h-2 flex justify-center items-center">
                             {num}
                         </p>
                     ))}
