@@ -1,22 +1,16 @@
 import { ChessProvider } from "../utils/context/ChessContext";
 import MoveHistory from "./MoveHistory";
 import Board from "./Board";
-
-// type Props = {
-//
-// }
-//
+import GameScreen from "./GameScreen";
 
 function Game() {
     return (
-        <div className="container mx-auto max-w-7xl w-full h-full lg:flex lg:flex-row-reverse lg:items-center lg:gap-24">
-            <ChessProvider>
+        <ChessProvider>
+            <div className="container mx-auto max-w-7xl w-full h-screen lg:flex lg:flex-row-reverse lg:items-center lg:gap-24 p-8">
                 <MoveHistory />
-                <div className="w-full h-full flex items-center justify-center">
-                    <Board />
-                </div>
-            </ChessProvider>
-        </div>
+                <GameScreen />
+            </div>
+        </ChessProvider>
     );
 }
 

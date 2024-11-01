@@ -15,7 +15,7 @@ import { useChess } from "../utils/context/ChessContext";
 import { useWindowSize } from "../utils/hooks/useWindowSize";
 
 function Board() {
-    const { chess, isAtTheTop, isAtTheBottom, addToHistory } = useChess();
+    const { chess, isAtTheTop, isAtTheBottom, addToHistory, capturePiece } = useChess();
 
     const [fromSq, setFromSq] = useState<string | undefined>(undefined);
     const [lastMoveFromSq, setLastMoveFromSq] = useState<string | undefined>(undefined);
@@ -32,9 +32,6 @@ function Board() {
         square: null,
         color: "w",
     });
-
-    const [capturedWhitePieces, setCapturedWhitePieces] = useState<PieceSymbol[]>([]);
-    const [capturedBlackPieces, setCapturedBlackPieces] = useState<PieceSymbol[]>([]);
 
     const boardRef = useRef<HTMLDivElement>(null);
 
@@ -108,7 +105,7 @@ function Board() {
             // Get the board position to display the popup near the promotion square
             const rect = boardRef.current?.getBoundingClientRect();
             if (rect) {
-                const x = (endSquare.charCodeAt(0) - "a".charCodeAt(0)) * (rect.width / 8) + (width < 1024 ? 20 : 36);
+                const x = (endSquare.charCodeAt(0) - "a".charCodeAt(0)) * (rect.width / 8) + (width < 1024 ? 20 : 28);
                 const y = chess.turn() === "w" ? 2 : rect.height;
 
                 setPromotionPopup({
@@ -126,11 +123,7 @@ function Board() {
             addToHistory(move);
 
             if (move?.captured) {
-                if (move.color === "w") {
-                    setCapturedBlackPieces((prev) => [...prev, move.captured as PieceSymbol]);
-                } else {
-                    setCapturedWhitePieces((prev) => [...prev, move.captured as PieceSymbol]);
-                }
+                capturePiece(move.captured as PieceSymbol, move.color);
             }
 
             setLastMoveFromSq(fromSq);
@@ -151,11 +144,7 @@ function Board() {
             });
             addToHistory(move);
             if (move?.captured) {
-                if (move.color === "w") {
-                    setCapturedBlackPieces((prev) => [...prev, move.captured as PieceSymbol]);
-                } else {
-                    setCapturedWhitePieces((prev) => [...prev, move.captured as PieceSymbol]);
-                }
+                capturePiece(move.captured as PieceSymbol, move.color);
             }
 
             setLastMoveFromSq(fromSq);
@@ -171,11 +160,10 @@ function Board() {
     }
 
     return (
-        <div className="relative w-[406px] lg:w-[648px] lg:h-[648px] h-[406px] ">
-            <Profile capturedPieces={capturedBlackPieces} color="b" name="ArGoX" elo="9999" />
-            <div className="bg-white w-full h-full flex justify-center items-center border rounded-lg pt-2 pr-2 pb-6 lg:pb-10 pl-6 lg:pl-10 relative">
+        <div className="relative w-[406px] lg:w-[520px] lg:h-[520px] h-[406px] ">
+            <div className="bg-white w-full h-full flex justify-center items-center border rounded-lg pt-2 pr-2 pb-6 lg:pb-8 pl-6 lg:pl-8 relative">
                 <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-                    <div ref={boardRef} className="w-[360px] lg:w-[600px] h-[360px] lg:h-[600px] grid grid-cols-8 grid-rows-8">
+                    <div ref={boardRef} className="w-[360px] lg:w-[480px] h-[360px] lg:h-[480px] grid grid-cols-8 grid-rows-8">
                         {boardState}
                     </div>
                 </DndContext>
@@ -187,7 +175,7 @@ function Board() {
                             top: promotionPopup.position.y,
                             zIndex: 20,
                         }}
-                        className="rounded h-[188px] lg:h-[308px] w-[51px] lg:w-[83px] shadow-md flex flex-col justify-center items-center p-1 bg-white"
+                        className="rounded h-[188px] lg:h-[288px] w-[51px] lg:w-[68px] shadow-md flex flex-col justify-center items-center p-1 bg-white"
                     >
                         {["queen", "rook", "bishop", "knight"].map((piece) => {
                             return (
@@ -195,7 +183,7 @@ function Board() {
                                     type="button"
                                     key={piece}
                                     onClick={() => handlePromotionChoice(piece as PieceSymbol)}
-                                    className="bg-white flex justify-center items-center w-[45px] lg:w-[75px] h-[45px] lg:h-[75px]"
+                                    className="bg-white flex justify-center items-center w-[45px] lg:w-[60px] h-[45px] lg:h-[60px]"
                                 >
                                     <div
                                         style={{
@@ -213,22 +201,21 @@ function Board() {
                     </div>
                 )}
                 {/* Ranks and Files Markers */}
-                <div className="absolute w-6 lg:w-10 h-full bg-transparent top-0 left-0 flex flex-col justify-start items-center pt-2">
+                <div className="absolute w-6 lg:w-8 h-full bg-transparent top-0 left-0 flex flex-col justify-start items-center pt-2">
                     {[8, 7, 6, 5, 4, 3, 2, 1].map((num) => (
-                        <p key={num} className="text-sm lg:text-xl font-medium w-2 h-[45px] lg:h-[75px] flex justify-center items-center">
+                        <p key={num} className="text-sm lg:text-xl font-medium w-2 h-[45px] lg:h-[60px] flex justify-center items-center">
                             {num}
                         </p>
                     ))}
                 </div>
-                <div className="absolute w-full h-6 lg:h-10 bg-transparent bottom-0 left-0 flex flex-row justify-end items-center pr-2">
+                <div className="absolute w-full h-6 lg:h-8 bg-transparent bottom-0 left-0 flex flex-row justify-end items-center pr-2">
                     {["a", "b", "c", "d", "e", "f", "g", "h"].map((num) => (
-                        <p key={num} className="text-sm lg:text-xl font-medium uppercase w-[45px] lg:w-[75px] h-2 flex justify-center items-center">
+                        <p key={num} className="text-sm lg:text-xl font-medium uppercase w-[45px] lg:w-[60px] h-2 flex justify-center items-center">
                             {num}
                         </p>
                     ))}
                 </div>
             </div>
-            <Profile capturedPieces={capturedWhitePieces} color="w" name="Challenger" elo="200" />
         </div>
     );
 }

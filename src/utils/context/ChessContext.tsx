@@ -1,4 +1,4 @@
-import type { Move, Square } from "chess.js";
+import type { Color, Move, PieceSymbol, Square } from "chess.js";
 import { Chess } from "chess.js";
 import type { ChessContextValue } from "../types";
 
@@ -27,6 +27,9 @@ const ChessProvider = ({ children }: Props) => {
     const [moveHistory, setMoveHistory] = useState<Move[]>([]);
     const [possibleMoves, setPossibleMoves] = useState<Move[]>([]);
 
+    const [capturedWhitePieces, setCapturedWhitePieces] = useState<PieceSymbol[]>([]);
+    const [capturedBlackPieces, setCapturedBlackPieces] = useState<PieceSymbol[]>([]);
+
     const isAtTheTop = (sq: Square) => sq.includes("8");
     const isAtTheBottom = (sq: Square) => sq.includes("1");
 
@@ -34,14 +37,29 @@ const ChessProvider = ({ children }: Props) => {
         setMoveHistory([...moveHistory, move]);
     };
 
+    const capturePiece = (piece: PieceSymbol, color: Color) => {
+        if (color === "w") {
+            setCapturedBlackPieces((prev) => [...prev, piece]);
+        } else {
+            setCapturedWhitePieces((prev) => [...prev, piece]);
+        }
+    };
+
     return (
         <ChessContext.Provider
             value={{
                 chess,
+
                 possibleMoves,
+                setPossibleMoves,
+
                 moveHistory,
                 addToHistory,
-                setPossibleMoves,
+
+                capturedBlackPieces,
+                capturedWhitePieces,
+                capturePiece,
+
                 isAtTheTop,
                 isAtTheBottom,
             }}

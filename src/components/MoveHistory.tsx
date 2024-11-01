@@ -33,7 +33,7 @@ const MoveHistory = () => {
                     );
                 })}
             </div>
-            <div className="flex flex-col gap-12 w-full py-20 ">
+            <div className="flex flex-col gap-12 w-full">
                 <div className="rounded bg-piece text-white shadow-md flex flex-col w-full min-h-[200px] p-1">
                     <h2 className="w-full text-3xl font-semibold text-center p-4 border-b border-gray-600">Move History</h2>
                     <div className="h-[500px] flex flex-col overflow-auto no-scrollbar">
@@ -48,8 +48,8 @@ const MoveHistory = () => {
                         })}
                     </div>
                 </div>
-                <div className="p-4 text-piece font-semibold">
-                    FEN: <span className="text-base font-medium text-active-dark hover:text-active-light">{chess.fen()}</span>
+                <div className="bg-square-light p-2 ded-lg truncate line-clamp-1 relative shadow-md flex justify-center items-center rounded-md font-semibold text-lg">
+                    FEN: <span className="ml-2 text-base font-medium bg-piece text-white p-2 rounded-lg">{chess.fen()}</span>
                 </div>
             </div>
         </>

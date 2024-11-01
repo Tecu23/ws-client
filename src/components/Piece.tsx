@@ -50,9 +50,7 @@ const Piece = ({ type, color, sq, image }: Props) => {
                 <div
                     style={{
                         width: "80%",
-                        maxWidth: 45,
                         height: "80%",
-                        maxHeight: 45,
 
                         backgroundImage: `url(${image})`,
                         backgroundSize: "cover",
